@@ -1,8 +1,11 @@
 import 'package:clima/services/location.dart';
+import 'package:clima/services/networking.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'location_screen.dart';
+
+const String API_KEY = '9539f7fc862d298620f90096660773de';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -10,34 +13,38 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  double latitude;
+  double longitude;
+
   @override
   void initState() {
     super.initState();
-    getLocation();
+    getLocationData();
   }
 
-  void getLocation() async {
+  void getLocationData() async {
     Location location = Location();
     await location.setCurrentLocation();
-    print(location.getCurrentLocation());
-  }
+    latitude = location.getCurrentLocation()['latitude'];
+    longitude = location.getCurrentLocation()['longitude'];
+    NetworkHelper networkHelper = NetworkHelper(
+        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$API_KEY');
 
-  void getData() async{
-    http.Response response = await http.get('https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b6907d289e10d714a6e88b30761fae22');
-    if(response.statusCode == 200) {
-      String data = response.body;
-      var decodedData = jsonDecode(data);
-      String city = decodedData['name'];
-      double temperature = decodedData['main']['temp'];
-      int condition = decodedData['weather'][0]['id'];
-    } else {
-      print(response.statusCode);
-    }
+    var weatherData = await networkHelper.getData();
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LocationScreen();
+    }));
   }
 
   @override
   Widget build(BuildContext context) {
-    getData();
-    return Scaffold();
+    return Scaffold(
+      body: Center(
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
+        ),
+      ),
+    );
   }
 }
