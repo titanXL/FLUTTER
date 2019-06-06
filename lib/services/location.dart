@@ -6,14 +6,15 @@ class Location {
 
   Future<void> setCurrentLocation() async {
     try {
-      Position position = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-      this.latitude = position.latitude;
-      this.longitude = position.longitude;
+//      Position position = await Geolocator()
+//          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+
+      this.latitude = 42.6977;
+      this.longitude = 23.3219;
     } catch (e) {
       print(e);
-      this.latitude = 33.0;
-      this.longitude = -122.0;
+      this.latitude = 42.6977;
+      this.longitude = 23.3219;
     }
   }
 
